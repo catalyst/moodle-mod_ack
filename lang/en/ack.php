@@ -26,3 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Acknowledgement';
+$string['resource:addinstance'] = 'Add a new acknowledgement';
+$string['resource:view'] = 'View acknowledgement';
