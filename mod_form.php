@@ -39,7 +39,7 @@ class mod_ack_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $COURSE;
 
         $mform = $this->_form;
 
@@ -60,16 +60,57 @@ class mod_ack_mod_form extends moodleform_mod {
         $mform->addHelpButton('name', 'ackname', 'mod_ack');
 
         // Adding the standard "intro" and "introformat" fields.
-        if ($CFG->branch >= 29) {
-            $this->standard_intro_elements();
-        } else {
-            $this->add_intro_editor();
-        }
+        $this->standard_intro_elements();
 
-        // Adding the rest of mod_ack settings, spreading all them into this fieldset
-        // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        $mform->addElement('static', 'label1', 'acksettings', get_string('acksettings', 'mod_ack'));
-        $mform->addElement('header', 'ackfieldset', get_string('ackfieldset', 'mod_ack'));
+        // Acknowledgement specific settings.
+        $mform->addElement('header', 'acksettings', get_string('acksettings', 'mod_ack'));
+        $mform->setExpanded('acksettings', true);
+
+        // Acknowledgement types.
+        $options = array(
+                ACKNOWLEDGE_TYPE_TEXT => get_string('acktype_text', 'mod_ack'),
+                ACKNOWLEDGE_TYPE_FILE => get_string('acktype_file', 'mod_ack'),
+                ACKNOWLEDGE_TYPE_URL => get_string('acktype_url', 'mod_ack')
+        );
+        $ackselect = $mform->addElement('select', 'acktype', get_string('acktype', 'mod_ack'), $options);
+        $mform->addHelpButton('acktype', 'acktype', 'mod_ack');
+        $ackselect->setSelected(ACKNOWLEDGE_TYPE_TEXT);
+
+        // Acknowledgement as file.
+        $fileoptions = array(
+                'accepted_types' => array('document'),
+                'subdirs' => false,
+                'maxfiles' => 1,
+                'maxbytes' => $COURSE->maxbytes
+        );
+        $mform->addElement('filemanager', 'acktypefile', get_string('acktypefile', 'mod_ack'),
+                null, $fileoptions);
+        $mform->hideIf('acktypefile', 'acktype', 'neq', ACKNOWLEDGE_TYPE_FILE);
+
+        // Acknowledgement as text.
+        $editoroptions = array(
+                'subdirs' => false,
+                'maxfiles' => -1,
+                'maxbytes' => $COURSE->maxbytes,
+                'context' => $this->context
+        );
+        $mform->addElement('editor', 'acktypetext', get_string('acktypetext', 'mod_ack'),
+                null, $editoroptions);
+        $mform->setType('acktypetext', PARAM_RAW);
+        $mform->hideIf('acktypetext', 'acktype', 'neq', ACKNOWLEDGE_TYPE_TEXT);
+
+        // Acknowledgement as URL.
+        $mform->addElement('url', 'acktypeurl', get_string('acktypeurl', 'mod_ack'),
+                array('size'=>'60'), array('usefilepicker'=>true));
+        $mform->setType('acktypeurl', PARAM_RAW_TRIMMED);
+        $mform->hideIf('acktypeurl', 'acktype', 'neq', ACKNOWLEDGE_TYPE_URL);
+
+        // Acknowledgement as text.
+        $mform->addElement('textarea', 'ackaccepttext', get_string('ackaccepttext', 'mod_ack'),
+               array('cols' => 60));
+        $mform->setType('ackaccepttext', PARAM_RAW);
+        $mform->addHelpButton('ackaccepttext', 'ackaccepttext', 'mod_ack');
+        $mform->setDefault('ackaccepttext', get_string('ackaccepttextmsg', 'mod_ack'));
 
         // Add standard elements.
         $this->standard_coursemodule_elements();

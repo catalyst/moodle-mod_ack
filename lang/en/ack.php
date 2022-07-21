@@ -25,9 +25,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Acknowledgement';
+$string['ackaccepttext'] = 'Acceptance message';
+$string['ackaccepttext_help'] = 'The acceptance message the displayed to the student';
+$string['ackaccepttextmsg'] = 'I acknowledge I have read and understood this information';
+$string['ackname'] = 'Acknowledgement name';
+$string['ackname_help'] = 'The name of this acknowledgement';
+$string['acksettings'] = 'Acknowledgement settings';
+$string['acktype'] = 'Acknowledgement type';
+$string['acktype_file'] = 'File';
+$string['acktype_help'] = 'Choose the Acknowledgement type:<br/><strong>Text</strong> Rich text<br/><strong>File</strong> An uploaded file<br/><strong>URL</strong> An external file or webpage<br/><br/>All types are displayed embedded.';
+$string['acktype_text'] = 'Text';
+$string['acktype_url'] = 'URL (link)';
+$string['acktypefile'] = 'Acknowledgement file';
+$string['acktypetext'] = 'Acknowledgement text';
+$string['acktypeurl'] = 'Acknowledgement URL';
 $string['modulename'] = 'Acknowledge';
 $string['modulenameplural'] = 'Acknowledgements';
 $string['noackinstances'] = 'No acknowledgement instances in this course';
+$string['pluginadministration'] = 'Acknowledgement module administration';
+$string['pluginname'] = 'Acknowledgement';
 $string['resource:addinstance'] = 'Add a new acknowledgement';
 $string['resource:view'] = 'View acknowledgement';

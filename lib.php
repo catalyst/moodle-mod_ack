@@ -22,6 +22,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Acknowledgement types.
+define('ACKNOWLEDGE_TYPE_TEXT', 1);
+define('ACKNOWLEDGE_TYPE_FILE', 2);
+define('ACKNOWLEDGE_TYPE_URL', 3);
+
 /**
  * Return if the plugin supports $feature.
  *
@@ -31,6 +36,8 @@
 function ack_supports($feature) {
     switch ($feature) {
         case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
             return true;
         default:
             return null;
