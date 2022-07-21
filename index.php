@@ -50,7 +50,8 @@ echo $OUTPUT->heading($modulenameplural);
 $acks = get_all_instances_in_course('ack', $course);
 
 if (empty($acks)) {
-    notice(get_string('no$ackinstances', 'mod_ack'), new moodle_url('/course/view.php', array('id' => $course->id)));
+    notice(get_string('noackinstances', 'mod_ack'),
+            new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 $table = new html_table();
