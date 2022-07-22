@@ -76,6 +76,8 @@ class mod_ack_mod_form extends moodleform_mod {
         $mform->addHelpButton('acktype', 'acktype', 'mod_ack');
         $ackselect->setSelected(ACKNOWLEDGE_TYPE_TEXT);
 
+
+
         // Acknowledgement as file.
         $fileoptions = array(
                 'accepted_types' => array('document'),
@@ -94,10 +96,16 @@ class mod_ack_mod_form extends moodleform_mod {
                 'maxbytes' => $COURSE->maxbytes,
                 'context' => $this->context
         );
-        $mform->addElement('editor', 'acktypetext', get_string('acktypetext', 'mod_ack'),
+
+        // We use a group with a single element to get around MDL-68540.
+        $grouparray = [];
+        $grouparray[] = $mform->createElement('editor', 'acktypetext',
+                get_string('acktypetext', 'mod_ack'),
                 null, $editoroptions);
         $mform->setType('acktypetext', PARAM_RAW);
-        $mform->hideIf('acktypetext', 'acktype', 'neq', ACKNOWLEDGE_TYPE_TEXT);
+
+        $mform->addGroup($grouparray, 'grouparr', '', array(' '), false);
+        $mform->hideIf('grouparr', 'acktype', 'neq', ACKNOWLEDGE_TYPE_TEXT);
 
         // Acknowledgement as URL.
         $mform->addElement('url', 'acktypeurl', get_string('acktypeurl', 'mod_ack'),
@@ -107,7 +115,7 @@ class mod_ack_mod_form extends moodleform_mod {
 
         // Acknowledgement as text.
         $mform->addElement('textarea', 'ackaccepttext', get_string('ackaccepttext', 'mod_ack'),
-               array('cols' => 60));
+               array('cols' => 70));
         $mform->setType('ackaccepttext', PARAM_RAW);
         $mform->addHelpButton('ackaccepttext', 'ackaccepttext', 'mod_ack');
         $mform->setDefault('ackaccepttext', get_string('ackaccepttextmsg', 'mod_ack'));
