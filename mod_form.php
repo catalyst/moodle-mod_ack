@@ -118,4 +118,18 @@ class mod_ack_mod_form extends moodleform_mod {
         // Add standard buttons.
         $this->add_action_buttons();
     }
+
+    /**
+     * Handle processing and retrieval of stored data.
+     *
+     * @param array $defaultvalues Form defaults.
+     * @return void
+     **/
+    public function data_preprocessing(&$defaultvalues) {
+        if ($this->current->instance) {
+            $defaultvalues['acktypetext']['format'] = $defaultvalues['contentformat'];
+            $defaultvalues['acktypetext']['text']   = $defaultvalues['content'];
+            $defaultvalues['ackaccepttext'] = $defaultvalues['accepttext'];
+        }
+    }
 }

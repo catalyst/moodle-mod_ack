@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/ack/db" VERSION="20220719" COMMENT="XMLDB file for Moodle mod_ack"
+<XMLDB PATH="mod/ack/db" VERSION="20220731" COMMENT="XMLDB file for Moodle mod_ack"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -13,6 +13,10 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when the instance was last modified."/>
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Activity description."/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The format of the intro field."/>
+        <FIELD NAME="type" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="The type of acknowledgement: text, file or url"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The content of the acknowledgement when the type is text."/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="The format of the content"/>
+        <FIELD NAME="accepttext" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The acceptance text"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
