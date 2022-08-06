@@ -58,8 +58,21 @@ function ack_supports($feature) {
 function ack_add_instance($moduleinstance, $mform = null) {
     global $DB;
 
-    $moduleinstance->timecreated = time();
+    if ($moduleinstance->acktype == ACKNOWLEDGE_TYPE_TEXT) {
+        // Save the text elements.
+        $moduleinstance->content       = $moduleinstance->acktypetext['text'];
+        $moduleinstance->contentformat = $moduleinstance->acktypetext['format'];
 
+        // Process and store any files used in the content.
+
+    } elseif ($moduleinstance->acktype == ACKNOWLEDGE_TYPE_FILE) {
+
+    } elseif ($moduleinstance->acktype == ACKNOWLEDGE_TYPE_URL) {
+
+    }
+
+    $moduleinstance->accepttext = $moduleinstance->ackaccepttext;
+    $moduleinstance->timecreated = time();
     $id = $DB->insert_record('ack', $moduleinstance);
 
     return $id;
