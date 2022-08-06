@@ -56,22 +56,31 @@ function ack_supports($feature) {
  * @return int The id of the newly inserted record.
  */
 function ack_add_instance($moduleinstance, $mform = null) {
-    global $DB;
+    global $COURSE, $DB;
 
-    if ($moduleinstance->acktype == ACKNOWLEDGE_TYPE_TEXT) {
+    if ($moduleinstance->type == ACKNOWLEDGE_TYPE_TEXT) {
         // Save the text elements.
-        $moduleinstance->content       = $moduleinstance->acktypetext['text'];
-        $moduleinstance->contentformat = $moduleinstance->acktypetext['format'];
+        $moduleinstance->content       = $moduleinstance->typetext['text'];
+        $moduleinstance->contentformat = $moduleinstance->typetext['format'];
 
         // Process and store any files used in the content.
+        $draftitemid = file_get_submitted_draft_itemid('typetext');
+        $context = context_module::instance($moduleinstance->coursemodule);
+        $editoroptions = array(
+                'subdirs' => false,
+                'maxfiles' => -1,
+                'maxbytes' => $COURSE->maxbytes,
+        );
 
-    } elseif ($moduleinstance->acktype == ACKNOWLEDGE_TYPE_FILE) {
+        file_save_draft_area_files($draftitemid, $context->id, 'mod_ack', 'content',
+                0, $editoroptions);
 
-    } elseif ($moduleinstance->acktype == ACKNOWLEDGE_TYPE_URL) {
+    } elseif ($moduleinstance->type == ACKNOWLEDGE_TYPE_FILE) {
+
+    } elseif ($moduleinstance->type == ACKNOWLEDGE_TYPE_URL) {
 
     }
 
-    $moduleinstance->accepttext = $moduleinstance->ackaccepttext;
     $moduleinstance->timecreated = time();
     $id = $DB->insert_record('ack', $moduleinstance);
 
