@@ -36,7 +36,6 @@ define('ACKNOWLEDGE_TYPE_URL', 3);
 function ack_supports($feature) {
     switch ($feature) {
         case FEATURE_MOD_INTRO:
-            return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         default:
@@ -56,33 +55,8 @@ function ack_supports($feature) {
  * @return int The id of the newly inserted record.
  */
 function ack_add_instance($moduleinstance, $mform = null) {
-    global $COURSE, $DB;
-
-    if ($moduleinstance->type == ACKNOWLEDGE_TYPE_TEXT) {
-        // Save the text elements.
-        $moduleinstance->content       = $moduleinstance->typetext['text'];
-        $moduleinstance->contentformat = $moduleinstance->typetext['format'];
-
-        // Process and store any files used in the content.
-        $draftitemid = file_get_submitted_draft_itemid('typetext');
-        $context = context_module::instance($moduleinstance->coursemodule);
-        $editoroptions = array(
-                'subdirs' => false,
-                'maxfiles' => -1,
-                'maxbytes' => $COURSE->maxbytes,
-        );
-
-        file_save_draft_area_files($draftitemid, $context->id, 'mod_ack', 'content',
-                0, $editoroptions);
-
-    } elseif ($moduleinstance->type == ACKNOWLEDGE_TYPE_FILE) {
-
-    } elseif ($moduleinstance->type == ACKNOWLEDGE_TYPE_URL) {
-
-    }
-
-    $moduleinstance->timecreated = time();
-    $id = $DB->insert_record('ack', $moduleinstance);
+    $ack_obj = new \mod_ack\ack_module\ack_module();
+    $id = $ack_obj->add_instance($moduleinstance);
 
     return $id;
 }
@@ -98,12 +72,10 @@ function ack_add_instance($moduleinstance, $mform = null) {
  * @return bool True if successful, false otherwise.
  */
 function ack_update_instance($moduleinstance, $mform = null) {
-    global $DB;
+    $ack_obj = new \mod_ack\ack_module\ack_module();
+    $updated = $ack_obj->update_instance($moduleinstance);
 
-    $moduleinstance->timemodified = time();
-    $moduleinstance->id = $moduleinstance->instance;
-
-    return $DB->update_record('ack', $moduleinstance);
+    return $updated;
 }
 
 /**

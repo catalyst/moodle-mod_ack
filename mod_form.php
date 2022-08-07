@@ -135,8 +135,16 @@ class mod_ack_mod_form extends moodleform_mod {
      **/
     public function data_preprocessing(&$defaultvalues) {
         if ($this->current->instance) {
+            // Process content for editor.
             $defaultvalues['typetext']['format'] = $defaultvalues['contentformat'];
             $defaultvalues['typetext']['text']   = $defaultvalues['content'];
+
+            // Get existing files into draft area for file picker.
+            $draftitemid = file_get_submitted_draft_itemid('typefile');
+            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_ack', 'content',
+                    0, array('subdirs'=>true));
+            $default_values['files'] = $draftitemid;
+        }
         }
     }
 }
