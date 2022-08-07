@@ -142,9 +142,53 @@ class mod_ack_mod_form extends moodleform_mod {
             // Get existing files into draft area for file picker.
             $draftitemid = file_get_submitted_draft_itemid('typefile');
             file_prepare_draft_area($draftitemid, $this->context->id, 'mod_ack', 'content',
-                    0, array('subdirs'=>true));
-            $default_values['files'] = $draftitemid;
+                    0);
+            $defaultvalues['typefile'] = $draftitemid;
         }
+    }
+
+    /**
+     * Do additional validation on data.
+     *
+     * @param array $data Array of ("fieldname"=>value) of submitted data.
+     * @param array $files Array of uploaded files "element_name"=>tmp_file_path.
+     * @return array $errors array of "fieldname"=>"description" if there are errors, or an empty array if everything is OK.
+     * @throws coding_exception
+     */
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        // Validating entered url this is copied from mod_url, we are looking for obvious problems only,
+        // teachers are responsible for testing if it actually works.
+        // This is not a security validation!! Teachers are allowed to enter "javascript:alert(666)" for example.
+
+        if ($data['type'] == ACKNOWLEDGE_TYPE_URL && !empty($data['typeurl'])) {
+            $url = $data['typeurl'];
+            if (preg_match('|^/|', $url)) {
+                // Links relative to server root are ok - no validation necessary.
+                return $errors;
+
+            } else if (preg_match('|^[a-z]+://|i', $url)
+                    || preg_match('|^https?:|i', $url) or preg_match('|^ftp:|i', $url)) {
+                // Normal URL.
+                if (!url_appears_valid_url($url)) {
+                    $errors['typeurl'] = get_string('invalidurl', 'url');
+                }
+
+            } else if (preg_match('|^[a-z]+:|i', $url)) {
+                // general URI such as teamspeak, mailto, etc. - it may or may not work in all browsers,
+                // we do not validate these at all, sorry.
+                return $errors;
+
+            } else {
+                // invalid URI, we try to fix it by adding 'http://' prefix,
+                // relative links are NOT allowed because we display the link on different pages!
+                if (!url_appears_valid_url('http://'.$url)) {
+                    $errors['typeurl'] = get_string('invalidurl', 'url');
+                }
+            }
         }
+
+        return $errors;
     }
 }
