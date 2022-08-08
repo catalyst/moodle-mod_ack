@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/ack/db" VERSION="20220731" COMMENT="XMLDB file for Moodle mod_ack"
+<XMLDB PATH="mod/ack/db" VERSION="20220808" COMMENT="XMLDB file for Moodle mod_ack"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -17,10 +17,26 @@
         <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The content of the acknowledgement when the type is text."/>
         <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="The format of the content"/>
         <FIELD NAME="accepttext" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The acceptance text"/>
+        <FIELD NAME="typeurl" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The URL to fetch when using the URL type"/>
+        <FIELD NAME="parameters" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The URL parameters serialized"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="ackrecord" COMMENT="Stores user acknowledgement details">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ackid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The id of the acknowledgement this record relates to"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the user that the record relates to"/>
+        <FIELD NAME="viewtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time the acknowledgement was viewed by the user"/>
+        <FIELD NAME="acktime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time the user acknowledged"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ackid_key" TYPE="foreign" FIELDS="ackid" REFTABLE="ack" REFFIELDS="id"/>
+        <KEY NAME="userid_key" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Key to the user table"/>
       </KEYS>
     </TABLE>
   </TABLES>
