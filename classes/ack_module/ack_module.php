@@ -84,6 +84,19 @@ class ack_module {
                     0, $this->fileoptions);
 
         } elseif ($moduleinstance->type == ACKNOWLEDGE_TYPE_URL) {
+            // Process URL parameters.
+            $parameters = array();
+
+            // We only handle 100 parameters cause that's what mod_url does.
+            for ($i=0; $i < 100; $i++) {
+                $parameter = "parameter_$i";
+                $variable  = "variable_$i";
+                if (empty($moduleinstance->$parameter) or empty($moduleinstance->$variable)) {
+                    continue;
+                }
+                $parameters[$moduleinstance->$parameter] = $moduleinstance->$variable;
+            }
+            $moduleinstance->parameters = serialize($parameters);
 
         }
 

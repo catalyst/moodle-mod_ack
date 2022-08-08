@@ -144,6 +144,17 @@ class mod_ack_mod_form extends moodleform_mod {
             file_prepare_draft_area($draftitemid, $this->context->id, 'mod_ack', 'content',
                     0);
             $defaultvalues['typefile'] = $draftitemid;
+
+            // Handle URL type parameters, this is done the same way as mod_url.
+            if (!empty($default_values['parameters'])) {
+                $parameters = (array) unserialize_array($default_values['parameters']);
+                $i = 0;
+                foreach ($parameters as $parameter=>$variable) {
+                    $default_values['parameter_'.$i] = $parameter;
+                    $default_values['variable_'.$i]  = $variable;
+                    $i++;
+                }
+            }
         }
     }
 
