@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 $string['accepttext'] = 'Acceptance message';
 $string['accepttext_help'] = 'The acceptance message the displayed to the student';
 $string['accepttextmsg'] = 'I acknowledge I have read and understood this information';
+$string['emptytext'] = 'Text can not be empty';
+$string['emptyurl'] = 'URL can not be empty';
 $string['name'] = 'Acknowledgement name';
 $string['name_help'] = 'The name of this acknowledgement';
 $string['settings'] = 'Acknowledgement settings';

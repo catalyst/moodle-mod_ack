@@ -80,7 +80,7 @@ class ack_module {
             $this->fileoptions['accepted_types'] = array('document');
             $this->fileoptions['maxfiles'] = 1;
 
-            file_save_draft_area_files($draftitemid, $context->id, 'mod_ack', 'content',
+            file_save_draft_area_files($draftitemid, $context->id, 'mod_ack', 'filecontent',
                     0, $this->fileoptions);
 
         } elseif ($moduleinstance->type == ACKNOWLEDGE_TYPE_URL) {
@@ -134,5 +134,57 @@ class ack_module {
         $moduleinstance->id = $moduleinstance->instance;
 
         return $DB->update_record('ack', $moduleinstance);
+    }
+
+    /**
+     * Does weak url validation, we are looking for major problems only,
+     * no strict RFE validation. Copied from mod_url.
+     *
+     * @param string $url The URL to check.
+     * @return bool True if valid URL false if not.
+     */
+    public static function is_valid_url(string $url): bool {
+        if (preg_match('/^(\/|https?:|ftp:)/i', $url)) {
+            // This is not exact validation, we look for severely malformed URLs only.
+            return (bool)preg_match('/^[a-z]+:\/\/([^:@\s]+:[^@\s]+@)?[^ @]+(:[0-9]+)?(\/[^#]*)?(#.*)?$/i', $url);
+        } else {
+            return (bool)preg_match('/^[a-z]+:\/\/...*$/i', $url);
+        }
+    }
+
+    /**
+     * Validating entered url this is copied from mod_url, we are looking for obvious problems only,
+     * teachers are responsible for testing if it actually works.
+     * This is not a security validation!! Teachers are allowed to enter "javascript:alert(666)" for example.
+     *
+     * @param string $url The URL to validate
+     * @return string|null Return null on success else return error string.
+     * @throws \coding_exception
+     */
+    public static function validate_url(string $url): ?string {
+        if (preg_match('|^/|', $url)) {
+            // Links relative to server root are ok - no validation necessary.
+            return  null;
+
+        } else if (preg_match('|^[a-z]+://|i', $url)
+                || preg_match('|^https?:|i', $url) or preg_match('|^ftp:|i', $url)) {
+            // Normal URL.
+            if (!self::is_valid_url($url)) {
+                return get_string('invalidurl', 'url');
+            }
+
+        } else if (preg_match('|^[a-z]+:|i', $url)) {
+            // general URI such as teamspeak, mailto, etc. - it may or may not work in all browsers,
+            // we do not validate these at all, sorry.
+            return null;
+
+        } else {
+            // invalid URI, we try to fix it by adding 'http://' prefix,
+            // relative links are NOT allowed because we display the link on different pages!
+            if (!self::is_valid_url('http://'.$url)) {
+                return get_string('invalidurl', 'url');
+            }
+        }
+        return null;
     }
 }

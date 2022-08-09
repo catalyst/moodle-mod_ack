@@ -141,7 +141,7 @@ class mod_ack_mod_form extends moodleform_mod {
 
             // Get existing files into draft area for file picker.
             $draftitemid = file_get_submitted_draft_itemid('typefile');
-            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_ack', 'content',
+            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_ack', 'filecontent',
                     0);
             $defaultvalues['typefile'] = $draftitemid;
 
@@ -169,35 +169,36 @@ class mod_ack_mod_form extends moodleform_mod {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        // Validating entered url this is copied from mod_url, we are looking for obvious problems only,
-        // teachers are responsible for testing if it actually works.
-        // This is not a security validation!! Teachers are allowed to enter "javascript:alert(666)" for example.
-
-        if ($data['type'] == ACKNOWLEDGE_TYPE_URL && !empty($data['typeurl'])) {
-            $url = $data['typeurl'];
-            if (preg_match('|^/|', $url)) {
-                // Links relative to server root are ok - no validation necessary.
+        // Validating entered url.
+        if ($data['type'] == ACKNOWLEDGE_TYPE_URL) {
+            // Check for empty URL.
+            if (empty($data['typeurl'])) {
+                $errors['typeurl'] = get_string('emptyurl', 'mod_ack');
                 return $errors;
-
-            } else if (preg_match('|^[a-z]+://|i', $url)
-                    || preg_match('|^https?:|i', $url) or preg_match('|^ftp:|i', $url)) {
-                // Normal URL.
-                if (!url_appears_valid_url($url)) {
-                    $errors['typeurl'] = get_string('invalidurl', 'url');
-                }
-
-            } else if (preg_match('|^[a-z]+:|i', $url)) {
-                // general URI such as teamspeak, mailto, etc. - it may or may not work in all browsers,
-                // we do not validate these at all, sorry.
-                return $errors;
-
-            } else {
-                // invalid URI, we try to fix it by adding 'http://' prefix,
-                // relative links are NOT allowed because we display the link on different pages!
-                if (!url_appears_valid_url('http://'.$url)) {
-                    $errors['typeurl'] = get_string('invalidurl', 'url');
-                }
             }
+            // Validate URL.
+            $url = $data['typeurl'];
+            $urlerror = \mod_ack\ack_module\ack_module::validate_url($url);
+            if ($urlerror) {
+                $errors['typeurl'] = $urlerror;
+            }
+        } else if ($data['type'] == ACKNOWLEDGE_TYPE_TEXT) {
+            // Check for empty Text.
+            if (!preg_match('/^[^\>\<]+|[\>]\w+/', $data['typetext']['text'])) {
+                // Adding to grouparr because of MDL-68540.
+                $errors['grouparr'] = get_string('emptytext', 'mod_ack');
+                return $errors;
+            }
+
+        } else if ($data['type'] == ACKNOWLEDGE_TYPE_FILE) {
+            // Check for empty URL.
+            $draftitemid = file_get_submitted_draft_itemid('typefile');
+            error_log(print_r($draftitemid, true));
+            if (!false) {
+                $errors['typefile'] = get_string('emptyfile', 'mod_ack');
+                return $errors;
+            }
+
         }
 
         return $errors;
